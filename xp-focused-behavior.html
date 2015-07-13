@@ -16,7 +16,7 @@ This behavior is used to add focus capabilities on the context element.
 @homepage http://expandjs.com/elements/xp-focused-behavior
 
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.3
+@dependency expandjs ExpandJS/expandjs#0.9.4
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -85,8 +85,9 @@ This behavior is used to add focus capabilities on the context element.
             var self = this;
 
             // Setting
-            self.focused  = self.focused && !post;
-            self.tabIndex = post ? -1 : self.lastTabIndex;
+            self.focused      = self.focused && !post;
+            self.lastTabIndex = post ? self.tabIndex : self.lastTabIndex;
+            self.tabIndex     = post ? -1 : self.lastTabIndex;
 
             // Styling
             self.style.pointerEvents = post ? 'none' : '';
@@ -101,8 +102,7 @@ This behavior is used to add focus capabilities on the context element.
             var self = this;
 
             // Setting
-            self.lastTabIndex = self.tabIndex >= 0 ? self.tabIndex : self.lastTabIndex;
-            self.tabIndex     = self.disabled ? -1 : Math.max(self.tabIndex, 0);
+            self.tabIndex = self.disabled ? -1 : self.tabIndex || 0;
 
             // Observing
             XP.onMutation(self, Polymer.XPFocusedBehavior.mutated.bind(self), {attributes: true, attributeFilter: ['tabindex']});
