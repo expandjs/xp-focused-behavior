@@ -7,17 +7,18 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This behavior is used to add focus capabilities on the context element.
+A behavior used to add focus capabilities on a custom element.
 
 @behavior xp-focused-behavior
-@description A behavior used to add focus capabilities on the context element
-@keywords web app, html5, expandjs, web-components
+@description A behavior used to add focus capabilities on a custom element
+@keywords expandjs, web app, custom elements, web-components
 @group behaviors
+
 @homepage http://expandjs.com/elements/xp-focused-behavior
 @repository https://github.com/ExpandJS/xp-focused-behavior
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -41,9 +42,11 @@ This behavior is used to add focus capabilities on the context element.
              * @attribute disabled
              * @type boolean
              * @default false
+             * @notifies
              */
             disabled: {
-                observer: '_disabledChanged',
+                notify: true,
+                observer: '_disabledObserver',
                 reflectToAttribute: true,
                 type: Boolean,
                 value: false
@@ -70,28 +73,30 @@ This behavior is used to add focus capabilities on the context element.
         /**
          * The last value of tabIndex.
          *
-         * @property lastTabIndex
+         * @property tabIndexLast
          * @type number
          * @default 0
          * @readonly
          */
-        lastTabIndex: 0,
+        tabIndexLast: 0,
 
         /*********************************************************************/
 
         // OBSERVER
-        _disabledChanged: function (post) {
+        _disabledObserver: function () {
 
             // Vars
             var self = this;
 
+            // Focusing
+            self._setFocused(self.focused && !self.disabled);
+
             // Setting
-            self.focused      = self.focused && !post;
-            self.lastTabIndex = post ? self.tabIndex : self.lastTabIndex;
-            self.tabIndex     = post ? -1 : self.lastTabIndex;
+            self.tabIndexLast = self.disabled ? self.tabIndex : self.tabIndexLast;
+            self.tabIndex     = self.disabled ? -1 : self.tabIndexLast;
 
             // Styling
-            self.style.pointerEvents = post ? 'none' : '';
+            self.style.pointerEvents = self.disabled ? 'none' : '';
         },
 
         /*********************************************************************/
